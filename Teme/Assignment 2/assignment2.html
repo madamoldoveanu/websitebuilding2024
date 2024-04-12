@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Assignment 2</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            font-family: sans-serif;
+        }
+
+        #login-container {
+            width: 460px;
+            margin: 0 auto;
+        }
+
+        form label,
+        form input {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        form input {
+            padding: 8px;
+        }
+
+        form label {
+            font-weight: bold;
+        }
+
+        form div {
+            margin: 16px 0px;
+        }
+
+        .invalid {
+            border: 1px solid red;
+        }
+
+        .valid {
+            border: 1px solid green;
+        }
+
+        .error-message {
+            color: red;
+            margin-top: 8px;
+        }
+
+        .success-message {
+            color: green;
+            margin-top: 8px;
+        }
+
+        .error-icon {
+            color: red;
+            display: none;
+        }
+
+        .success-icon {
+            color: green;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="login-container">
+
+        <form id="login-form">
+            <div>
+                <label for="username">Username:</label>
+                <input id="username" type="text">
+                <span id="username-icon" class="error-icon"><i class="fas fa-times-circle"></i></span>
+
+            </div>
+
+            <div>
+                <label for="password">Password:</label>
+                <input id="password" type="password">
+                <span id="password-icon" class="error-icon"><i class="fas fa-times-circle"></i></span>
+
+            </div>
+
+            <input type="submit" value="Login">
+        </form>
+
+        <div id="error-messages" class="error-message"></div>
+        <div id="success-message" class="success-message"></div>
+
+    </div>
+
+    <script src="./js/jquery-3.7.1.slim.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var form = document.getElementById('login-form');
+            var usernameInput = document.getElementById('username');
+            var passwordInput = document.getElementById('password');
+            var errorMessages = document.getElementById('error-messages');
+            var successMessage = document.getElementById('success-message');
+
+            var fontAwesomeLink = document.createElement('link');
+            fontAwesomeLink.rel = 'stylesheet';
+            fontAwesomeLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css';
+            document.head.appendChild(fontAwesomeLink);
+
+            form.addEventListener('input', function () {
+                resetValidation(usernameInput, 'username-icon');
+                resetValidation(passwordInput, 'password-icon');
+                errorMessages.innerHTML = '';
+                successMessage.textContent = '';
+            });
+
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+
+                var errors = [];
+
+                validateField(usernameInput, 'new_user', errors, 'Username', 'username-icon');
+                validateField(passwordInput, '123456789', errors, 'Password', 'password-icon');
+
+                if (errors.length > 0) {
+                    displayErrors(errors);
+                } else {
+                    displaySuccessMessage('Successful login!');
+                }
+            });
+
+            function validateField(input, validValue, errorsArray, fieldName, iconName) {
+                var value = input.value.trim();
+
+                if (value === '') {
+                    errorsArray.push('Please enter ' + fieldName.toLowerCase());
+                    setValidation(input, iconName, false);
+                } else if (value !== validValue) {
+                    errorsArray.push('Please enter a valid ' + fieldName.toLowerCase());
+                    setValidation(input, iconName, false);
+                } else {
+                    setValidation(input, iconName, true);
+                }
+            }
+
+            function setValidation(input, iconName, isValid) {
+                var icon = document.getElementById(iconName);
+                input.classList.toggle('valid', isValid);
+                input.classList.toggle('invalid', !isValid);
+                icon.innerHTML = isValid ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-times-circle"></i>';
+                icon.style.display = 'inline-block';
+            }
+
+            function resetValidation(input, iconName) {
+                var icon = document.getElementById(iconName);
+                input.classList.remove('valid', 'invalid');
+                icon.style.display = 'none';
+            }
+
+            function displayErrors(errors) {
+                var errorMessagesHTML = errors.map(function (error) {
+                    return '<p>' + error + '</p>';
+                }).join('');
+                errorMessages.innerHTML = errorMessagesHTML;
+                errorMessages.classList.add('fade-in');
+            }
+
+            function displaySuccessMessage(message) {
+                successMessage.textContent = message;
+                successMessage.classList.add('fade-in');
+            }
+        });
+
+    </script>
+
+</body>
+
+</html>
